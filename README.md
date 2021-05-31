@@ -6,7 +6,7 @@ For management reasons, we've split these samples out from the [main Nutanix.dev
 
 ## Ansible Playbook List
 
-- [nutanix-move](./tree/master/nutanix-move): Nutanix Move operations
+- [nutanix-move](https://github.com/nutanixdev/ansible/tree/master/nutanix-move): Nutanix Move operations
 
 ## Repository License
 
