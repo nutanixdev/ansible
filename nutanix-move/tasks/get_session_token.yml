@@ -1,0 +1,34 @@
+---
+#Authorize to the cluster and register a cookie to be used for further API calls
+
+- name: Auth to the move appliance 
+  uri:
+    url: "{{ move_api_url }}/users/login"
+    body:
+      kind: cluster
+      sort_order: ASCENDING
+      offset: 0
+      length: 10
+      sort_attribute: ''
+      Spec: 
+        Password: "{{ move_password }}"
+        UserName: "{{ move_username }}"    
+    method: POST
+    validate_certs: no
+    force_basic_auth: yes
+    body_format: json
+    return_content: yes
+  register: "login"
+  ignore_errors: yes
+
+- name: Set Login Data 
+  set_fact: 
+    logindata: "{{ login.content | from_json }}"
+
+- name: Set session Token
+  set_fact: 
+    session_token: "{{ logindata.Status | json_query(jmesquery) }}"
+  vars:
+    jmesquery: 'Token'
+
+   

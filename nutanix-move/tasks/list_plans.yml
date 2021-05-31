@@ -1,0 +1,52 @@
+#Retrive Migration Plan UUID's
+
+- name: Get plans list
+  uri:
+    url: "{{ move_api_url }}/plans/list" 
+    body:
+      kind: cluster
+      sort_order: ASCENDING
+      offset: 0
+      length: 10
+      sort_attribute: ''
+    method: POST
+    validate_certs: no
+    body_format: json
+    status_code: 200
+    headers: 
+      Authorization: "{{ session_token }}"
+    return_content: yes
+  register: plans_result
+ 
+
+- name: Print returned json_plan_result dictionary
+  debug:
+   var: plans_result.content
+  when: global_debug
+
+- name: Set plan data
+  set_fact:
+     plandata: "{{ plans_result.content }}"
+
+- name: Print returned plans_result dictionary
+  debug:
+   var: plandata.Entities
+  when: global_debug
+
+  
+- name: Stash Plan Names and UUIDs
+  set_fact:  
+    plans:  "{{ plandata.Entities| json_query(jmesquery) | flatten}}"
+  vars:
+    jmesquery: "[*].MetaData.{Name:Name, UUID:UUID}"
+
+- name: Print returned json_provider_result dictionary
+  debug:
+   var: plans
+  when: global_debug
+
+- name: Define Cluster UUID to use from name
+  set_fact:
+    plans_uuid: "{{ item['UUID'] }}"
+  when: "item['Name'] == plan_name"
+  loop: "{{ plans }}"

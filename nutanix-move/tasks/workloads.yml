@@ -1,0 +1,65 @@
+# Retrive Migration Plan UUID's
+- name: Get plans list
+  uri:
+    url: "{{ move_api_url }}/plans/{{ plans_uuid }}/workloads/list" 
+    body:
+      kind: cluster
+      sort_order: ASCENDING
+      offset: 0
+      length: 10
+      sort_attribute: ''
+    method: POST
+    validate_certs: no
+    body_format: json
+    status_code: 200
+    headers: 
+      Authorization: "{{ session_token }}"
+    return_content: yes
+  register: workloads
+ 
+- name: Print returned workloads dictionary
+  debug:
+   var: workloads.content
+  when: global_debug
+
+- name: Set workload data
+  set_fact:
+     wloaddata: "{{ workloads.content }}"
+
+- name: Print returned workloads dictionary
+  debug:
+   var: wloaddata.Status
+  when: global_debug
+
+- name: Stash WorkLoad VMNames and UUIDs
+  set_fact:  
+    vmdata:  "{{ wloaddata.Status.VMStatus| json_query(jmesquery) }}"
+  vars:
+    jmesquery: "[*].{Name:Name, UUID:UUID}"
+
+- name: Get Plan UUID from VM Name
+  set_fact:
+    vm_uuid: "{{ item['UUID'] }}"
+  when: "item['Name'] == vm_name"
+  loop: "{{ vmdata }}"
+
+- name: VM Cutover
+  uri:
+    url: "{{ move_api_url }}/plans/{{ plans_uuid }}/workloads/{{ vm_uuid }}/action"  
+    body:
+      kind: cluster
+      sort_order: ASCENDING
+      offset: 0
+      length: 10
+      sort_attribute: ''
+      Spec: 
+        Action: "{{ action }}"
+    method: POST
+    validate_certs: no
+    body_format: json
+    status_code: 202
+    headers: 
+      Authorization: "{{ session_token }}"
+    return_content: yes
+  register: results
+

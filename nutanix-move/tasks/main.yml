@@ -1,0 +1,6 @@
+---
+# tasks file for move_providers
+- import_tasks: get_session_token.yml
+#- import_tasks: listproviders.yml
+- import_tasks: list_plans.yml
+- import_tasks: workloads.yml

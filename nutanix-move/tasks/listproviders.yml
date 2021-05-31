@@ -1,0 +1,39 @@
+--- 
+- name: Get providers list
+  uri:
+    url: "{{ move_api_url }}/providers/list" 
+    body:
+      kind: cluster
+      sort_order: ASCENDING
+      offset: 0
+      length: 10
+      sort_attribute: ''
+    method: POST
+    validate_certs: no
+    body_format: json
+    status_code: 200
+    headers: 
+      Authorization: "{{ session_token }}"
+    return_content: yes
+  register: json_providers_result
+
+
+- name: Print returned json_provider_result dictionary
+  debug:
+   var: json_providers_result
+  when: global_debug
+
+- name: Set providerdata
+  set_fact:
+       providerdata: "{{ json_providers_result.content }}"      
+
+- name: Stash the Cluster UUIDs
+  set_fact:
+    provider_uuids: "{{ provider_uuids|default([]) + [ {'Name': item.Spec.Name, 'UUID': item.MetaData.UUID } ] }}"
+  with_items: "{{ providerdata.Entities }}"
+
+- name: Debug | Print cluster name/UUIDs
+  debug:
+    var: provider_uuids
+  when: global_debug
+

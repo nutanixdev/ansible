@@ -1,0 +1,36 @@
+--- 
+name: "Create Migraiton PLan"
+register: json_providers_result
+uri: 
+  body: 
+    Spec: 
+      Name: "{{ Plan_name }}"
+      NetworkMappings: 
+        - 
+          SourceNetworkID: "{{ Source_Cluster_Network }}"
+          TargetNetworkID: "{{ target_Cluster_Network }}"
+          TestNetworkID: 
+      Settings: 
+        Bandwidth: ~
+        GuestPrepMode: manual
+        Schedule: 
+          RWEndTimeAtEpochSec: 0
+          RWStartTimeAtEpochSec: 0
+          ScheduleAtEpochSec: -1
+      SourceInfo: 
+        ESXiProviderAttrs: 
+          RegionID: ap-south-1
+        ProviderUUID: d9ff4697-d8a9-4df9-b81c-b00d08c55cff
+      TargetInfo: 
+        AOSProviderAttrs: 
+          ClusterUUID: "{{ target_Cluster_uuid }}"
+          ContainerUUID: "{{ target_Cluster_storgae_uuid }}"
+        ProviderUUID: fb4c0f29-f46c-4d87-983b-f02af2e2285a
+      Workload: 
+        Type: VM
+        VMs: 
+          - 
+            AllowUVMOps: false
+            RetainMacAddress: false
+            VMReference: 
+              UUID: 00000000-0000-0000-b82e-10ef8a0b2756

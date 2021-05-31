@@ -1,0 +1,16 @@
+---
+# defaults file for move_opersations
+
+# Control debug
+global_debug: false
+
+# Nutanix Move Settings
+api_version: "2.0"
+move_ip: your move ip
+move_api_url: "https://{{ move_ip }}/move/v2"
+move_username: "nutanix"
+move_password: "yourmovepassword"
+# plan_name: "My Plan"
+# vm_name: "Your vm name"
+# action: cutover
+
